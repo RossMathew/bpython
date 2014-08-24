@@ -31,7 +31,7 @@ default_colors = {
  
  
 class BPythonFormatter(Formatter):
-    """This is the custom formatter for bpython.
+    """This is subclassed from the custom formatter for bpython.
     Its format() method receives the tokensource
     and outfile params passed to it from the
     Pygments highlight() method and slops
@@ -65,6 +65,8 @@ class Interp(code.InteractiveInterpreter):
         which code will be executed; it defaults to a newly created
         dictionary with key "__name__" set to "__console__" and key
         "__doc__" set to None.
+
+        We include an argument for the outfile to pass to the formatter for it to write to.
 
         """
         if locals is None:
@@ -128,10 +130,8 @@ class Interp(code.InteractiveInterpreter):
 
         We remove the first stack item because it is our own code.
 
-        The output is written by self.write(), below.
 
         """
-        #try:
         type, value, tb = sys.exc_info()
         sys.last_type = type
         sys.last_value = value
@@ -165,25 +165,4 @@ class Interp(code.InteractiveInterpreter):
             else:
                 cur_line.append((token,text))
         assert cur_line == []
-        #finally:
-        #    tblist = tb = None
 
-i = Interp()
-#i.runsource('1.1.1.1')
-def g(): f()
-
-def f(): 1/0
-i.locals = {'g':g,'f':f}
-i.runsource('g()')
-
-    # def write(self, data):
-    #     """Write a string.
-
-    #     The base implementation writes to sys.stderr; a subclass may
-    #     replace this with a different implementation.
-
-    #     """
-    #     self.outfile.write(data)
-        
- 
-# i = Interp()
