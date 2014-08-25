@@ -184,6 +184,10 @@ class ReevaluateFakeStdin(object):
         self.repl.send_to_stdout(value)
         return value
 
+class ErrorWriter(object):
+    def __init__(self, write):
+        self.write = write
+
 class Repl(BpythonRepl):
     """Python Repl
 
@@ -238,7 +242,8 @@ class Repl(BpythonRepl):
                                                    # would be unsafe because initial
                                                    # state was passed in
         if interp is None:
-            interp = Interp(locals=locals_)
+            self.error_writer = ErrorWriter(self.send_to_stderr)
+            interp = Interp(locals=locals_, outfile=self.error_writer)
         if banner is None:
             banner = _('Welcome to bpython! Press <%s> for help.') % config.help_key
         config.autocomplete_mode = autocomplete.SIMPLE # only one implemented currently
