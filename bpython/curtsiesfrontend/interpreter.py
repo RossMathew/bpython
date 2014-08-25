@@ -29,6 +29,9 @@ default_colors = {
         Name.Class:'d',
     }
  
+class Outfile(object):
+    def __init__(self, write):
+        self.write = write
  
 class BPythonFormatter(Formatter):
     """This is subclassed from the custom formatter for bpython.
@@ -58,7 +61,7 @@ class BPythonFormatter(Formatter):
         outfile.write(str(parse(o.rstrip())))
  
 class Interp(code.InteractiveInterpreter):
-    def __init__(self, locals=None, outfile=sys.__stderr__):
+    def __init__(self, locals=None, writetb=lambda stuff: sys.stderr.write(stuff)):
         """Constructor.
 
         The optional 'locals' argument specifies the dictionary in
@@ -73,7 +76,7 @@ class Interp(code.InteractiveInterpreter):
             locals = {"__name__": "__console__", "__doc__": None}
         self.locals = locals
         self.compile = CommandCompiler()
-        self.outfile = outfile
+        self.outfile = Outfile(writetb)
 
     def showsyntaxerror(self, filename=None):
         """Display the syntax error that just occurred.
