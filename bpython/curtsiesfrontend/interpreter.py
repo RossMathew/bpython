@@ -29,10 +29,6 @@ default_colors = {
         Name.Class:'d',
     }
  
-class Outfile(object):
-    def __init__(self, write):
-        self.write = write
- 
 class BPythonFormatter(Formatter):
     """This is subclassed from the custom formatter for bpython.
     Its format() method receives the tokensource
@@ -61,7 +57,7 @@ class BPythonFormatter(Formatter):
         outfile.write(str(parse(o.rstrip())))
  
 class Interp(code.InteractiveInterpreter):
-    def __init__(self, locals=None, writetb=lambda stuff: sys.stderr.write(stuff)):
+    def __init__(self, locals=None):
         """Constructor.
 
         The optional 'locals' argument specifies the dictionary in
@@ -76,7 +72,10 @@ class Interp(code.InteractiveInterpreter):
             locals = {"__name__": "__console__", "__doc__": None}
         self.locals = locals
         self.compile = CommandCompiler()
-        self.outfile = Outfile(writetb)
+
+        # typically changed after being instantiated
+        self.write = lambda stuff: sys.stderr.write(stuff)
+        self.outfile = self
 
     def showsyntaxerror(self, filename=None):
         """Display the syntax error that just occurred.
@@ -116,10 +115,10 @@ class Interp(code.InteractiveInterpreter):
             if text.endswith('\n'):
                 cur_line.append((token,text))
                 if no_format_mode:
-                    traceback_code_formatter.format(cur_line,self.outfile)
+                    traceback_code_formatter.format(cur_line, self.outfile)
                     no_format_mode = False
                 else:
-                    traceback_informative_formatter.format(cur_line,self.outfile)
+                    traceback_informative_formatter.format(cur_line, self.outfile)
                 cur_line = []
             elif text == '    ' and cur_line == []:
                 no_format_mode = True
@@ -157,10 +156,10 @@ class Interp(code.InteractiveInterpreter):
             if text.endswith('\n'):
                 cur_line.append((token,text))
                 if no_format_mode:
-                    traceback_code_formatter.format(cur_line,self.outfile)
+                    traceback_code_formatter.format(cur_line, self.outfile)
                     no_format_mode = False
                 else:
-                    traceback_informative_formatter.format(cur_line,self.outfile)
+                    traceback_informative_formatter.format(cur_line, self.outfile)
                 cur_line = []
             elif text == '    ' and cur_line == []:
                 no_format_mode = True

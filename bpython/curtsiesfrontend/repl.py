@@ -238,7 +238,8 @@ class Repl(BpythonRepl):
                                                    # would be unsafe because initial
                                                    # state was passed in
         if interp is None:
-            interp = Interp(locals=locals_, writetb=self.send_to_stderr)
+            interp = Interp(locals=locals_)
+            interp.writetb = self.send_to_stderr
         if banner is None:
             banner = _('Welcome to bpython! Press <%s> for help.') % config.help_key
         config.autocomplete_mode = autocomplete.SIMPLE # only one implemented currently
@@ -1106,7 +1107,8 @@ class Repl(BpythonRepl):
         self.display_lines = []
 
         if not self.weak_rewind:
-            self.interp = self.interp.__class__(writetb=self.send_to_stderr)
+            self.interp = self.interp.__class__()
+            self.interp.writetb = self.send_to_stderr
             self.coderunner.interp = self.interp
 
         self.buffer = []
