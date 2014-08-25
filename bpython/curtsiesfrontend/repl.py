@@ -1111,7 +1111,7 @@ class Repl(BpythonRepl):
         self.display_lines = []
 
         if not self.weak_rewind:
-            self.interp = self.interp.__class__()
+            self.interp = self.interp.__class__(outfile=self.error_writer)
             self.coderunner.interp = self.interp
 
         self.buffer = []
