@@ -60,6 +60,14 @@ MAGIC_METHODS = ["__%s__" % s for s in [
 def after_last_dot(name):
     return name.rstrip('.').rsplit('.')[-1]
 
+def get_matches(completers):
+    """Returns a list of matches based on which matchers are applicatble"""
+    for completer in completers:
+        matches = completer.matches()
+        if matches is not None:
+            return matches
+    return []
+
 def get_completer(cursor_offset, current_line, locals_, argspec, current_block,
                   mode, complete_magic_methods):
     """Returns a list of matches and a class for what kind of completion is happening

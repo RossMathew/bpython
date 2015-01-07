@@ -628,6 +628,14 @@ class Repl(object):
                 if not self.docstring:
                     self.docstring = None
 
+    # Should we show the completion box? (are there matches, or is there a docstring to show?)
+    #   Some completions should always be shown, other only if tab=True
+    # set the current docstring to the "current function's" docstring
+    # Populate the matches_iter object with new matches from the current state
+    #    if none, clear  the matches iterator
+    # If exactly one match that is equal to current line, clear matches
+    # If example one match and tab=True, then choose that and clear matches
+
     def complete(self, tab=False):
         """Construct a full list of possible completions and
         display them in a window. Also check if there's an available argspec
@@ -663,10 +671,9 @@ class Repl(object):
                                  self.current_line, matches, completer)
 
         if len(matches) == 1:
-                self.matches_iter.next()
-                if tab: # if this complete is being run for a tab key press, tab() to do the swap
+                if tab: # if this complete is being run for a tab key press, substitute common sequence
 
-                    self.cursor_offset, self.current_line = self.matches_iter.substitute_cseq()
+                    self._cursor_offset, self._current_line = self.matches_iter.substitute_cseq()
                     return Repl.complete(self)
                 elif self.matches_iter.current_word == matches[0]:
                     self.matches_iter.clear()
