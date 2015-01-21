@@ -126,10 +126,10 @@ class TestCurtsiesReplTab(unittest.TestCase):
         self.repl.matches_iter.matches = []
         self.repl.matches_iter.is_cseq.return_value = False
         self.repl.matches_iter.next.return_value = None
+        self.repl.matches_iter.__next__.return_value = None
         self.repl.matches_iter.cur_line.return_value = (None, None)
         self.repl.on_tab()
         self.repl.complete.assert_called_once_with(tab=True)
-        self.repl.matches_iter.next.assert_called_once_with()
         self.repl.matches_iter.cur_line.assert_called_once_with()
 
     def test_tab_with_matches_selects_next_match(self):
@@ -138,9 +138,9 @@ class TestCurtsiesReplTab(unittest.TestCase):
         self.repl.complete()
         self.repl.matches_iter.is_cseq.return_value = False
         self.repl.matches_iter.next.return_value = None
+        self.repl.matches_iter.__next__.return_value = None
         self.repl.matches_iter.cur_line.return_value = (None, None)
         self.repl.on_tab()
-        self.repl.matches_iter.next.assert_called_once_with()
         self.repl.matches_iter.cur_line.assert_called_once_with()
 
     def test_tab_completes_common_sequence(self):
