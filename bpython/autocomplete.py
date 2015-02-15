@@ -273,7 +273,8 @@ class AttrCompletion(BaseCompletionType):
         matches = set(''.join([r.word[:-i], m])
                       for m in self.attr_matches(methodtext, locals_))
 
-        return set(m for m in matches
+        return set(_callable_postfix(eval(m, locals_), m)
+                   for m in matches
                    if few_enough_underscores(r.word.split('.')[-1],
                                              m.split('.')[-1]))
 
