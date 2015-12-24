@@ -384,7 +384,7 @@ class TestRepl(unittest.TestCase):
 
         self.assertTrue(self.repl.complete())
         self.assertTrue(hasattr(self.repl.matches_iter, 'matches'))
-        self.assertEqual(self.repl.matches_iter.matches, ['Foo.baz'])
+        self.assertEqual(self.repl.matches_iter.matches, ['Foo.baz('])
 
     def test_fuzzy_attribute_complete(self):
         self.repl = FakeRepl({'autocomplete_mode': autocomplete.FUZZY})
@@ -396,7 +396,7 @@ class TestRepl(unittest.TestCase):
 
         self.assertTrue(self.repl.complete())
         self.assertTrue(hasattr(self.repl.matches_iter, 'matches'))
-        self.assertEqual(self.repl.matches_iter.matches, ['Foo.bar'])
+        self.assertEqual(self.repl.matches_iter.matches, ['Foo.bar('])
 
     # 3. Edge cases
     def test_updating_namespace_complete(self):
