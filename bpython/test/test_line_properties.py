@@ -5,13 +5,13 @@ from bpython.line import current_word, current_dict_key, current_dict, \
     current_string, current_object, current_object_attribute, \
     current_from_import_from, current_from_import_import, current_import, \
     current_method_definition_name, current_single_word, \
-    current_expression_attribute
+    current_expression_attribute, current_dotted_attribute
 
 
 def cursor(s):
     """'ab|c' -> (2, 'abc')"""
     cursor_offset = s.index('|')
-    line = s[:cursor_offset] + s[cursor_offset+1:]
+    line = s[:cursor_offset] + s[cursor_offset + 1:]
     return cursor_offset, line
 
 
@@ -53,11 +53,12 @@ def encode(cursor_offset, line, result):
     if start < cursor_offset:
         encoded_line = encoded_line[:start] + '<' + encoded_line[start:]
     else:
-        encoded_line = encoded_line[:start+1] + '<' + encoded_line[start+1:]
+        encoded_line = (encoded_line[:start + 1] + '<' +
+                        encoded_line[start + 1:])
     if end < cursor_offset:
-        encoded_line = encoded_line[:end+1] + '>' + encoded_line[end+1:]
+        encoded_line = encoded_line[:end + 1] + '>' + encoded_line[end + 1:]
     else:
-        encoded_line = encoded_line[:end+2] + '>' + encoded_line[end+2:]
+        encoded_line = encoded_line[:end + 2] + '>' + encoded_line[end + 2:]
     return encoded_line
 
 
@@ -128,6 +129,15 @@ class TestCurrentWord(LineTestCase):
         self.assertAccess('stuff[stuff] + {123: 456} + <Object.attr1.attr2|>')
         self.assertAccess('stuff[<asd|fg>]')
         self.assertAccess('stuff[asdf[<asd|fg>]')
+
+    def test_non_dots(self):
+        self.assertAccess('].asdf|')
+        self.assertAccess(').asdf|')
+        self.assertAccess('foo[0].asdf|')
+        self.assertAccess('foo().asdf|')
+        self.assertAccess('foo().|')
+        self.assertAccess('foo().asdf.|')
+        self.assertAccess('foo[0].asdf.|')
 
     def test_open_paren(self):
         self.assertAccess('<foo(|>')
@@ -335,6 +345,17 @@ class TestCurrentExpressionAttribute(LineTestCase):
         self.assertAccess('"hey".asdf d|')
         self.assertAccess('"hey".<|>')
 
+
+class TestCurrentDottedAttribute(LineTestCase):
+    def setUp(self):
+        self.func = current_dotted_attribute
+
+    def test_simple(self):
+        self.assertAccess('<obj.attr>|')
+        self.assertAccess('(<obj.attr>|')
+        self.assertAccess('[<obj.attr>|')
+        self.assertAccess('m.body[0].value|')
+        self.assertAccess('m.body[0].attr.value|')
 
 if __name__ == '__main__':
     unittest.main()

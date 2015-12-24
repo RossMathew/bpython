@@ -73,7 +73,9 @@ def safe_eval(expr, namespace):
 def simple_eval(node_or_string, namespace=None):
     """
     Safely evaluate an expression node or a string containing a Python
-    expression.  The string or node provided may only consist of:
+    expression without triggering any user code.
+
+    The string or node provided may only consist of:
     * the following Python literal structures: strings, numbers, tuples,
         lists, and dicts
     * variable names causing lookups in the passed in namespace or builtins
@@ -144,6 +146,12 @@ def simple_eval(node_or_string, namespace=None):
             obj = _convert(node.value)
             index = _convert(node.slice.value)
             return safe_getitem(obj, index)
+
+        # this is a deviation from literal_eval: we allow attribute access
+        if isinstance(node, ast.Attribute):
+            obj = _convert(node.value)
+            attr = node.attr
+            return safe_get_attribute(obj, attr)
 
         raise ValueError('malformed string')
     return _convert(node_or_string)
@@ -269,5 +277,3 @@ def safe_get_attribute_new_style(obj, attr):
         return AttributeIsEmptySlot
 
     raise AttributeError()
-
-

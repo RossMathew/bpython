@@ -86,6 +86,12 @@ class TestSimpleEval(unittest.TestCase):
         with self.assertRaises(EvaluationError):
             simple_eval('a')
 
+    def test_attribute_access(self):
+        class Foo(object):
+            abc = 1
+
+        self.assertEqual(simple_eval('f.abc', {'foo': Foo()}), 1)
+
 
 class TestEvaluateCurrentExpression(unittest.TestCase):
 
